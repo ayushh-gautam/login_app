@@ -9,4 +9,3 @@ class welcomePage extends StatelessWidget {
     style: TextStyle(color: Colors.blue[600], fontSize: 20),)),);
   }
 }
-//woqooqgit 

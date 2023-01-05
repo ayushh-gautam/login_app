@@ -15,6 +15,22 @@ class _LoginFormState extends State<LoginForm> {
   @override
   String name = '';
   bool changebutton = false;
+
+  navigateToHome(BuildContext) async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        changebutton = true;
+      });
+      await Future.delayed(const Duration(seconds: 1));
+      await Navigator.pushNamed(context, 'welcomePage');
+      setState(() {
+        changebutton = false;
+        username.clear();
+        password.clear();
+      });
+    }
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -35,10 +51,10 @@ class _LoginFormState extends State<LoginForm> {
                   width: 260,
                   fit: BoxFit.cover,
                 ),
-                const Text(
-                  'Welcome Back!',
+                Text(
+                  'Welcome $name',
                   textScaleFactor: 1.8,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -52,20 +68,8 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                   child: Column(
                     children: [
+                      /*----------TEXT FIELD STARTS HERE---------- */
                       TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        controller: username,
-                        validator: (value) {
-                          if (value!.isEmpty ||
-                              !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
-                            return 'Enter username in correct form';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          name = value;
-                          setState(() {});
-                        },
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -76,21 +80,28 @@ class _LoginFormState extends State<LoginForm> {
                             fontSize: 18,
                           ),
                         ),
+                        keyboardType: TextInputType.emailAddress,
+                        controller: username,
+                        validator: (value) {
+                          if (value!.isEmpty ||
+                              !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                            return 'Enter username in correct form';
+                          }
+                          return null;
+                        },
+                        /* THIS METHOD IS USED TO CHANGE THE NAME ASIDE THE WELCOME GREETING WHENEVER USER 
+                        ENTERS HIS NAME IN THE TEXTFIELD */
+                        onChanged: (value) {
+                          name = value;
+                          setState(() {});
+                        },
                       ),
                       const SizedBox(
                         height: 30,
                       ),
+
+                      /*---------- PASSWORD FIELD------------ */
                       TextFormField(
-                        controller: password,
-                        obscureText: true,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Password can't be empty";
-                          } else if (value.length < 6) {
-                            return 'Password must be more than 6 character';
-                          }
-                          return null;
-                        },
                         decoration: InputDecoration(
                           prefixIcon: const Icon(CupertinoIcons.lock),
                           border: OutlineInputBorder(
@@ -101,6 +112,16 @@ class _LoginFormState extends State<LoginForm> {
                             fontSize: 18,
                           ),
                         ),
+                        controller: password,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Password can't be empty";
+                          } else if (value.length < 6) {
+                            return 'Password must be more than 6 character';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(
                         height: 6,
@@ -118,25 +139,32 @@ class _LoginFormState extends State<LoginForm> {
                       const SizedBox(
                         height: 20,
                       ),
+
+                      /*------------ LOGIN BUTTON -----------*/
                       InkWell(
-                        onTap: (() {
-                          Navigator.pushNamed(context, 'welcomePage');
-                        }),
-                        child: Container(
+                        onTap: (() => navigateToHome(BuildContext)),
+                        child: AnimatedContainer(
+                          duration: const Duration(seconds: 1),
                           height: 50,
-                          width: 120,
+                          width: changebutton ? 50 : 120,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(120),
+                            borderRadius:
+                                BorderRadius.circular(changebutton ? 300 : 120),
                             color: Colors.blue,
                           ),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                            textScaleFactor: 1.2,
-                          ),
+                          child: changebutton
+                              ? const Icon(
+                                  Icons.done,
+                                  color: Colors.white,
+                                )
+                              : const Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                  textScaleFactor: 1.2,
+                                ),
                         ),
                       ),
                       const SizedBox(
@@ -171,7 +199,6 @@ class _LoginFormState extends State<LoginForm> {
                               onPressed: () {},
                               icon: const Icon(
                                 Icons.g_mobiledata_rounded,
-                              
                               ),
                               label: const Text('Google'),
                             ),
